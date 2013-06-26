@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: tools jar
+Bundle-ClassPath: external:$java.home$/../lib/tools.jar
+Bundle-SymbolicName: org.eclipse.recommenders.3rd.tools_jar
+Bundle-Version: 0.1.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: com.sun.tools.javadoc, com.sun.javadoc
