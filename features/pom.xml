@@ -6,6 +6,7 @@
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
 		<version>1.0.4-SNAPSHOT</version>
+		<relativePath></relativePath>
 	</parent>
 
 	<groupId>org.eclipse.recommenders</groupId>
@@ -15,7 +16,7 @@
 	<name>LiveDoc Features</name>
 
 	<modules>
-		<module>org.eclipse.feature.recommenders.livedoc.cli</module>
+		<module>org.eclipse.recommenders.feature.livedoc.cli</module>
 	</modules>
 	
 	<profiles>
