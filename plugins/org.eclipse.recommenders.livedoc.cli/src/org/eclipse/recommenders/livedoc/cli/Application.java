@@ -18,6 +18,8 @@ import org.eclipse.recommenders.livedoc.javadoc.LiveDoc;
 import org.eclipse.recommenders.livedoc.utils.RepoBrokerProvider;
 import org.eclipse.recommenders.livedoc.utils.ZipUtils;
 import org.kohsuke.args4j.CmdLineParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
@@ -32,6 +34,7 @@ public class Application implements IApplication {
     public static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
     private static final File CACHE_DIR = new File(TEMP_DIR, "cache");
     private static final File INDEX_DIR = new File(TEMP_DIR, "indexes");
+    private Logger log = LoggerFactory.getLogger(getClass());
     private CLIOptions settings;
     
     
@@ -41,6 +44,8 @@ public class Application implements IApplication {
 	 */
     @SuppressWarnings({ "static-access", "unchecked" })
     public Object start(IApplicationContext context) throws Exception {
+        
+        System.setOut(System.err);
         
         // Parsing arguments
         
@@ -123,7 +128,7 @@ public class Application implements IApplication {
         }
         
         System.out.println("Done.");
-
+        
         return IApplication.EXIT_OK;
     }
 
@@ -132,6 +137,12 @@ public class Application implements IApplication {
 	 * @see org.eclipse.equinox.app.IApplication#stop()
 	 */
 	public void stop() {
+	    try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 		System.exit(0);
 	}
 }

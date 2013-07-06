@@ -7,8 +7,11 @@
 		<artifactId>org.eclipse.recommenders.parent</artifactId>
 		<version>1.0.4-SNAPSHOT</version>
 	</parent>
-	<artifactId>livedoc_targets</artifactId>
+	
+	<artifactId>livedoc-targets</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	
 	<modules>
 		<module>e43_livedoc</module>
 	</modules>

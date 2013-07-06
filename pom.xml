@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>recommenders-jdoc</artifactId>
-	<version>1.0.4-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>plugins</module>
-<!--		<module>features</module>
-		<module>products</module>-->
+		<module>features</module>
+		<module>products</module>
 		<module>targets</module>
 	</modules>
 </project>

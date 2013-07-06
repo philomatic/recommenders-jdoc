@@ -8,7 +8,6 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	
-	
 	<artifactId>org.eclipse.recommenders.livedoc.cli</artifactId>
 	<packaging>eclipse-plugin</packaging>
 </project>
