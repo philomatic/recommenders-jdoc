@@ -9,7 +9,7 @@
 		<version>0.1.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>livedoc-cli</artifactId>
+	<artifactId>livedoc-cli-export</artifactId>
 	<packaging>eclipse-repository</packaging>
 	<name>LiveDoc CLI Product</name>
 	<build>
