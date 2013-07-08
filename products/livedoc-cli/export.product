@@ -3,15 +3,18 @@
 
 <product name="LiveDoc CLI Product" uid="org.eclipse.recommenders.livedoc-cli-export" id="org.eclipse.recommenders.livedoc.cli.product" application="org.eclipse.recommenders.livedoc.cli.application" version="0.1.0.qualifier" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-nl en</programArgs>
+      <programArgs>-nl
+en</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
+
 
    <launcher name="livedoc">
       <solaris/>
@@ -20,8 +23,10 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="ch.qos.logback.classic"/>
@@ -61,5 +66,8 @@
       <feature id="org.eclipse.recommenders.feature.livedoc.cli" version="0.1.0.qualifier"/>
    </features>
 
+   <configurations>
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
+   </configurations>
 
 </product>

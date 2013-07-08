@@ -45,8 +45,6 @@ public class Application implements IApplication {
     @SuppressWarnings({ "static-access", "unchecked" })
     public Object start(IApplicationContext context) throws Exception {
         
-        System.setOut(System.err);
-        
         // Parsing arguments
         
         Iterator<String[]> iter = context.getArguments().values().iterator();
