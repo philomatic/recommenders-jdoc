@@ -11,12 +11,55 @@
 	</parent>
 	<artifactId>livedoc-cli-export</artifactId>
 	<packaging>eclipse-repository</packaging>
-	<name>LiveDoc CLI Product</name>
+	<name>LiveDoc CLI</name>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-director-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>materialize-products</id>
+						<goals>
+							<goal>materialize-products</goal>
+						</goals>
+					</execution>
+					<execution>
+						<phase>pre-integration-test</phase>
+						<id>archive-products</id>
+						<goals>
+							<goal>archive-products</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								def x86 = new File(project.basedir, 'target/products/org.eclipse.recommenders.livedoc-cli-export\win32\win32\x86\livedoc-cli-export-0.1.0')
+								def x86_64 = new File(project.basedir, 'target/products/org.eclipse.recommenders.livedoc-cli-export\win32\win32\x86_64\livedoc-cli-export-0.1.0')
+
+								def x86File = new File(x86, '/eclipsec.exe')
+								def x86ToFile = new File(x86, '/livedoc.exe')
+
+								def x86_64File = new File(x86_64, '/eclipsec.exe')
+								def x86_64ToFile = new File(x86_64, '/livedoc.exe')
+
+								ant.move(file: x86File, tofile: x86ToFile)
+								ant.move(file: x86_64File, tofile: x86_64ToFile)
+							</source>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
