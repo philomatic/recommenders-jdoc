@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="LiveDoc CLI Product" uid="org.eclipse.recommenders.livedoc-cli-ide" id="org.eclipse.recommenders.livedoc.cli.product" application="org.eclipse.recommenders.livedoc.cli.application" version="0.1.0.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="LiveDoc CLI" uid="org.eclipse.recommenders.livedoc-cli-ide" id="org.eclipse.recommenders.livedoc.cli.product" application="org.eclipse.recommenders.livedoc.cli.application" version="0.1.0.qualifier" useFeatures="false" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
