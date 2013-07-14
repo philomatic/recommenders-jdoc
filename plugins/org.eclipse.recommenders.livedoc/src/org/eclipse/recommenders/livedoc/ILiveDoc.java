@@ -1,4 +1,4 @@
-package org.eclipse.recommenders.livedoc.javadoc;
+package org.eclipse.recommenders.livedoc;
 
 import java.io.File;
 import java.util.List;
