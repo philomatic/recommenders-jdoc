@@ -50,7 +50,7 @@
 							<product>
 								<id>${project.groupId}.${project.artifactId}</id>
 								<rootFolder>${productId}</rootFolder>
-								<archiveFileName>${productId}</archiveFileName>
+								<archiveFileName>${productId}.${buildQualifier}</archiveFileName>
 							</product>
 						</products>
 					</configuration>
