@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.recommenders.feature.livedoc.cli"
       label="LiveDoc CLI"
-      version="0.1.0.qualifier"
+      version="0.1.1.qualifier"
       provider-name="Code Recommenders">
 
    <description url="http://www.example.com/description">

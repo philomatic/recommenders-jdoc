@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
 		<artifactId>livedoc-products</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.1.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>livedoc-cli-export</artifactId>
@@ -45,8 +45,8 @@
 						</goals>
 						<configuration>
 							<source>
-								def x86 = new File(project.basedir, 'target/products/org.eclipse.recommenders.livedoc-cli-export\win32\win32\x86\livedoc-cli-export-0.1.0')
-								def x86_64 = new File(project.basedir, 'target/products/org.eclipse.recommenders.livedoc-cli-export\win32\win32\x86_64\livedoc-cli-export-0.1.0')
+								def x86 = new File(project.basedir, 'target/products/org.eclipse.recommenders.livedoc-cli-export\win32\win32\x86\livedoc-cli-export-0.1.1')
+								def x86_64 = new File(project.basedir, 'target/products/org.eclipse.recommenders.livedoc-cli-export\win32\win32\x86_64\livedoc-cli-export-0.1.1')
 
 								def x86File = new File(x86, '/eclipsec.exe')
 								def x86ToFile = new File(x86, '/livedoc.exe')
