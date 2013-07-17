@@ -10,7 +10,7 @@
       <programArgs>-consoleLog
 org.sonatype.aether:aether-util:1.13.1
 -r http://repo1.maven.org/maven2/
--d .</programArgs>
+-d C:\Users\PaddyG\Code\LiveDocOutput</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
@@ -55,6 +55,7 @@ org.sonatype.aether:aether-util:1.13.1
       <plugin id="org.eclipse.recommenders.livedoc"/>
       <plugin id="org.eclipse.recommenders.livedoc.cli"/>
       <plugin id="org.eclipse.recommenders.utils"/>
+      <plugin id="org.eclipse.xtext.xbase.lib"/>
       <plugin id="org.jboss.netty"/>
       <plugin id="org.kohsuke.args4j"/>
       <plugin id="org.slf4j.api"/>
