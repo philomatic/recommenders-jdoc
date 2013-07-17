@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.livedoc.args4j;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.kohsuke.args4j.Argument;
@@ -8,7 +9,7 @@ import org.kohsuke.args4j.Option;
 
 public class CLIOptions {
     
-    @Option(name="-r", handler=ExtURLOptionHandler.class, required=true, usage="URL of Maven Repo")
+    @Option(name="-r", handler=ExtURLOptionHandler.class, usage="URL of Maven Repo")
     private URL sourceRepo;
     
     @Option(name="-verbose", usage="Output messages about what Livedoc is doing")
@@ -30,6 +31,15 @@ public class CLIOptions {
     @Argument(index=0, metaVar="[MavenCoordinate]",required=true, usage="<GroupId>:<ArtifactId>:<Version>")
     private String mavenCoordinates;
     
+    public CLIOptions() {
+        try {
+            //mvn central as default URL
+            this.sourceRepo = new URL("http://repo1.maven.org/maven2/");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean isVerbose() {
         return verbose;
     }
