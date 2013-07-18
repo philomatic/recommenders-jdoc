@@ -9,14 +9,13 @@
 		<relativePath></relativePath>
 	</parent>
 
-	<groupId>org.eclipse.recommenders</groupId>
 	<artifactId>livedoc-features</artifactId>
 	<version>0.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>LiveDoc Features</name>
 
 	<modules>
-		<module>org.eclipse.recommenders.feature.livedoc.cli</module>
+		<module>org.eclipse.recommenders.feature.livedoc</module>
 	</modules>
 	
 	<profiles>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="LiveDoc CLI" uid="org.eclipse.recommenders.livedoc-cli-export" id="org.eclipse.recommenders.livedoc.cli.product" application="org.eclipse.recommenders.livedoc.cli.application" version="0.1.1.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="LiveDoc CLI" uid="org.eclipse.recommenders.livedoc-cli-export" id="org.eclipse.recommenders.livedoc.cli.product" application="org.eclipse.recommenders.livedoc.cli.application" version="0.1.1.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
@@ -14,6 +14,7 @@ en</programArgs>
 
    <windowImages/>
 
+
    <launcher name="livedoc">
       <solaris/>
       <win useIco="false">
@@ -25,41 +26,10 @@ en</programArgs>
    </vm>
 
    <plugins>
-      <plugin id="ch.qos.logback.classic"/>
-      <plugin id="ch.qos.logback.core"/>
-      <plugin id="ch.qos.logback.slf4j" fragment="true"/>
-      <plugin id="com.google.gson"/>
-      <plugin id="com.google.guava"/>
-      <plugin id="com.ning.async-http-client"/>
-      <plugin id="javax.inject"/>
-      <plugin id="javax.servlet"/>
-      <plugin id="javax.xml"/>
-      <plugin id="org.apache.commons.io"/>
-      <plugin id="org.apache.commons.lang3"/>
-      <plugin id="org.eclipse.core.contenttype"/>
-      <plugin id="org.eclipse.core.jobs"/>
-      <plugin id="org.eclipse.core.runtime"/>
-      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
-      <plugin id="org.eclipse.equinox.app"/>
-      <plugin id="org.eclipse.equinox.common"/>
-      <plugin id="org.eclipse.equinox.preferences"/>
-      <plugin id="org.eclipse.equinox.registry"/>
-      <plugin id="org.eclipse.m2e.archetype.common"/>
-      <plugin id="org.eclipse.m2e.maven.indexer"/>
-      <plugin id="org.eclipse.m2e.maven.runtime"/>
-      <plugin id="org.eclipse.osgi"/>
-      <plugin id="org.eclipse.osgi.services"/>
-      <plugin id="org.eclipse.recommenders.3rd.tools_jar"/>
-      <plugin id="org.eclipse.recommenders.livedoc"/>
-      <plugin id="org.eclipse.recommenders.livedoc.cli"/>
-      <plugin id="org.eclipse.recommenders.utils"/>
-      <plugin id="org.jboss.netty"/>
-      <plugin id="org.kohsuke.args4j"/>
-      <plugin id="org.slf4j.api"/>
    </plugins>
 
    <features>
-      <feature id="org.eclipse.recommenders.feature.livedoc.cli" version="0.1.1.qualifier"/>
+      <feature id="org.eclipse.recommenders.feature.livedoc" version="0.1.1.qualifier"/>
    </features>
 
    <configurations>

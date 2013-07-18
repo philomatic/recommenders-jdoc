@@ -9,6 +9,7 @@
 		<version>0.1.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>org.eclipse.recommenders.feature.livedoc.cli</artifactId>
+	<name>LiveDoc Feature</name>
+	<artifactId>org.eclipse.recommenders.feature.livedoc</artifactId>
 	<packaging>eclipse-feature</packaging>
 </project>
