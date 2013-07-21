@@ -36,8 +36,7 @@ public class LiveDoc implements ILiveDoc {
     public boolean generate() {
         
         @SuppressWarnings("unused")
-        int returnCode = com.sun.tools.javadoc.Main.execute(com.sun.tools.javadoc.Main.class.getClassLoader(), buildArgs());
-        
+        int returnCode = com.sun.tools.javadoc.Main.execute(this.getClass().getClassLoader(), buildArgs());
         // returnCode handling
         return true;
     }
@@ -55,11 +54,10 @@ public class LiveDoc implements ILiveDoc {
         javadocArgs.add("-d");
         javadocArgs.add(getOutputDir().getAbsolutePath());
         
-//        javadocArgs.add("-taglet");
-//        javadocArgs.add("org.eclipse.recommenders.livedoc.extdoc.RecommendersTaglet");
         
-//        javadocArgs.add("-doclet");
-//        javadocArgs.add("org.eclipse.recommenders.livedoc.extdoc.RecommendersDoclet");
+        javadocArgs.add("-doclet");
+        javadocArgs.add("org.eclipse.recommenders.livedoc.extdoc.RecommendersDoclet");
+        
         
         javadocArgs.add("-subpackages");
         
