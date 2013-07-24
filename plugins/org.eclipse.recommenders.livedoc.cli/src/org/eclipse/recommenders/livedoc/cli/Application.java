@@ -30,6 +30,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
  */
 public class Application implements IApplication {
 
+    //TODO: clean tmp dir
     public static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
     private static final File CACHE_DIR = new File(TEMP_DIR, "cache");
     private static final File INDEX_DIR = new File(TEMP_DIR, "indexes");
