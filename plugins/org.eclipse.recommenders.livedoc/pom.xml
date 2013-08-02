@@ -28,6 +28,16 @@
 						</extraClasspathElements>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>animal-sniffer-maven-plugin</artifactId>
+					<configuration>
+						<ignores>
+							<ignore>com.sun.tools.doclets.*</ignore>
+							<ignore>com.sun.tools.javadoc.*</ignore>
+						</ignores>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

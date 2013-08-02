@@ -7,13 +7,13 @@ import com.sun.tools.doclets.Taglet;
 
 public interface ILiveDoc {
     
-    public boolean generate();
-    public void setVerbose(boolean verbose);
-    public boolean getVerbose();
-    public void setTaglets(List<Taglet> taglets);
-    public List<Taglet> getTaglets();
-    public void setOutputDir(File dir);
-    public File getOutputDir();
-    public void setSourceDir(File sourcePath);
-    public File getSourceDir();
+    boolean generate();
+    void setVerbose(boolean verbose);
+    boolean getVerbose();
+    void setTaglets(List<Taglet> taglets);
+    List<Taglet> getTaglets();
+    void setOutputDir(File dir);
+    File getOutputDir();
+    void setSourceDir(File sourcePath);
+    File getSourceDir();
 }

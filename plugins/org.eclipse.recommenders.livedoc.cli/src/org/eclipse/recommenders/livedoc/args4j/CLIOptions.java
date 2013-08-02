@@ -28,7 +28,7 @@ public class CLIOptions {
     private URL uploadRepo;
     
     // MavenCoordinates
-    @Argument(index=0, metaVar="[MavenCoordinate]",required=true, usage="<GroupId>:<ArtifactId>:<Version>")
+    @Argument(index=0, metaVar="[MavenCoordinate]", required=true, usage="<GroupId>:<ArtifactId>:<Version>")
     private String mavenCoordinates;
     
     public CLIOptions() {
