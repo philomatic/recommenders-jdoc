@@ -18,5 +18,4 @@ public class RepoBrokerProvider {
         // TODO: so bad, guice over plugins maybe?
         return new DefaultRepositoryBroker(cacheDir, indexDir);
     }
-
 }

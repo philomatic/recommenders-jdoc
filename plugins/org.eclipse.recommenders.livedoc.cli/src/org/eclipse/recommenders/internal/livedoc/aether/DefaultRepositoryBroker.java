@@ -90,7 +90,7 @@ public class DefaultRepositoryBroker implements IRepositoryBroker {
         public ArtifactDescriptorResult readArtifactDescriptor(RepositorySystemSession session,
                 ArtifactDescriptorRequest request) throws ArtifactDescriptorException {
             ArtifactDescriptorResult result = super.readArtifactDescriptor(session, request);
-            return result.setRepositories(Collections.<RemoteRepository> emptyList());
+            return result.setRepositories(Collections.<RemoteRepository>emptyList());
         }
     }
 

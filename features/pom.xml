@@ -4,9 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.eclipse.recommenders</groupId>
-		<artifactId>org.eclipse.recommenders.parent</artifactId>
+		<artifactId>features</artifactId>
 		<version>1.100.0-SNAPSHOT</version>
-		<relativePath></relativePath>
 	</parent>
 
 	<artifactId>livedoc-features</artifactId>
@@ -40,4 +39,20 @@
 			</build>
 		</profile>
 	</profiles>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho.extras</groupId>
+				<artifactId>tycho-source-feature-plugin</artifactId>
+				<configuration>
+					<excludes combine.children="append">
+						<plugin id="javax.xml" />
+						<plugin id="org.eclipse.m2e.archetype.common" />
+						<plugin id="org.eclipse.m2e.maven.indexer" />
+						<plugin id="org.kohsuke.args4j" />
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

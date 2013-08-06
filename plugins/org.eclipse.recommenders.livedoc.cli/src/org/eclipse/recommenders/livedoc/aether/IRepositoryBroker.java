@@ -112,5 +112,5 @@ public interface IRepositoryBroker {
      * @param monitor
      * @return
      */
-    public List<Artifact> listArtifactsForGroupId(RepositoryDescriptor repo, final String groupId, IProgressMonitor monitor);
+    List<Artifact> listArtifactsForGroupId(RepositoryDescriptor repo, final String groupId, IProgressMonitor monitor);
 }

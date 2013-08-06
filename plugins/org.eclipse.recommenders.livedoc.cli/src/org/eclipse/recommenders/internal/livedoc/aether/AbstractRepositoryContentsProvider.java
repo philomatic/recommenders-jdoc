@@ -137,7 +137,7 @@ public abstract class AbstractRepositoryContentsProvider implements IRepositoryC
         monitor.beginTask("Listing all artifacts", UNKNOWN);
         try {
             GroupedSearchResponse response = queryIndex(constructAllClassifiersQuery());
-            return filterArtifacts(response, Predicates.<ArtifactInfo> alwaysTrue());
+            return filterArtifacts(response, Predicates.<ArtifactInfo>alwaysTrue());
         } catch (Exception e) {
             log.error(LIST_ARTIFACTS_FAILED_EXCEPTION, sourceRepository, e);
             return Collections.emptyList();

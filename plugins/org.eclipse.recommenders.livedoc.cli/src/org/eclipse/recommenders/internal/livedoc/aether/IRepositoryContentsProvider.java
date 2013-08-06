@@ -19,6 +19,5 @@ public interface IRepositoryContentsProvider extends Closeable {
 
     void close() throws IOException;
 
-    public void index(IProgressMonitor monitor) throws Exception;
-
+    void index(IProgressMonitor monitor) throws Exception;
 }
