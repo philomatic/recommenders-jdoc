@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -19,7 +20,7 @@ import org.eclipse.recommenders.livedoc.aether.RepositoryDescriptor;
 import org.eclipse.recommenders.livedoc.args4j.CLIOptions;
 import org.eclipse.recommenders.livedoc.args4j.ExtURLOptionHandler;
 import org.eclipse.recommenders.livedoc.utils.RepoBrokerProvider;
-import org.eclipse.recommenders.livedoc.utils.ZipUtils;
+import org.eclipse.recommenders.utils.Zips;
 import org.kohsuke.args4j.CmdLineParser;
 import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.artifact.Artifact;
@@ -93,7 +94,7 @@ public class Application implements IApplication {
             .toString();
 
         File output = new File(settings.getOutputDir().getAbsolutePath() + File.separator + jarFileName);
-        ZipUtils.zip(tmpOutput, output);
+        Zips.zip(tmpOutput, output);
     }
 
     private void copyOutput(File tmpOutput) throws IOException {
@@ -126,7 +127,12 @@ public class Application implements IApplication {
     }
 
     private File extractSourceFiles(Artifact artifact) throws IOException {
-        return ZipUtils.unzipToSeparateFolder(artifact.getFile(), SOURCES_TEMP_DIR);
+        String fileName = artifact.getFile().getName();
+        fileName = StringUtils.removeEnd(fileName, ".jar");
+        
+        File destFolder = new File(SOURCES_TEMP_DIR, fileName);
+        Zips.unzip(artifact.getFile(), destFolder);     
+        return destFolder;
     }
 
     private Artifact downloadSourceArtifact() throws RepositoryException {
