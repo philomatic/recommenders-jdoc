@@ -2,6 +2,7 @@ package org.eclipse.recommenders.livedoc.cli;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -20,8 +21,7 @@ import org.eclipse.recommenders.livedoc.args4j.ExtURLOptionHandler;
 import org.eclipse.recommenders.livedoc.utils.RepoBrokerProvider;
 import org.eclipse.recommenders.livedoc.utils.ZipUtils;
 import org.kohsuke.args4j.CmdLineParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
@@ -30,23 +30,155 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
  */
 public class Application implements IApplication {
 
-    //TODO: clean tmp dir
-    public static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
-    private static final File CACHE_DIR = new File(TEMP_DIR, "cache");
-    private static final File INDEX_DIR = new File(TEMP_DIR, "indexes");
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private static final File TEMP_DIR = new File(System.getProperty("java.io.tmpdir"), "livedoc");
+    private static final File SOURCES_TEMP_DIR = new File(TEMP_DIR, "sources");
+    private static final File JAVADOC_TEMP_DIR = new File(TEMP_DIR, "javadoc");
+    private static final File SOURCEREPO_CACHE_DIR = new File(TEMP_DIR, "sourceRepo/cache");
+    private static final File SOURCEREPO_INDEX_DIR = new File(TEMP_DIR, "sourceRepo/indexes");
+//    private Logger log = LoggerFactory.getLogger(getClass());
     private CLIOptions settings;
+    private IRepositoryBroker repoBroker;
+    private RepositoryDescriptor sourceRepositoryDescriptor;
 
     /*
      * (non-Javadoc)
      * 
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app. IApplicationContext)
      */
-    @SuppressWarnings({ "static-access", "unchecked" })
     public Object start(IApplicationContext context) throws Exception {
 
-        // Parsing arguments
+        settings = parseArguments(context);
+        prepareTempDirectory();
+        initializeRepository();
 
+        Artifact sourceArtifact = downloadSourceArtifact();
+        File sourceFiles = extractSourceFiles(sourceArtifact);
+        List<String> subpackages = filterSourceFiles(sourceFiles);
+
+        String outPutFileName = outputName(sourceArtifact);
+        File tmpOutput = new File(JAVADOC_TEMP_DIR, outPutFileName);
+
+        generateJavaDoc(sourceFiles, subpackages, tmpOutput);
+
+        if (settings.getOutputDir() != null) {
+            copyOutput(tmpOutput);
+        }
+        if (settings.isJarOutput()) {
+            jarOutput(tmpOutput);
+        }
+        if (settings.getUploadRepo() != null) {
+            uploadJavadocArtifact(sourceArtifact, tmpOutput);
+        }
+
+        System.out.println("Done.");
+        return IApplication.EXIT_OK;
+    }
+
+    private void uploadJavadocArtifact(Artifact artifact, File tmpOutput) throws RepositoryException {
+        
+        Artifact uploadArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "javadoc",
+                "jar", artifact.getVersion());
+        
+        uploadArtifact = uploadArtifact.setFile(tmpOutput);
+        
+        RepositoryDescriptor uploadRepositoryDescriptor = new RepositoryDescriptor("uploadRepo",
+                settings.getUploadRepo());
+        repoBroker.upload(uploadArtifact, uploadRepositoryDescriptor, new NullProgressMonitor());
+    }
+
+    private void jarOutput(File tmpOutput) throws IOException {
+        
+        String jarFileName = new StringBuffer(tmpOutput.getName())
+            .append(".jar")
+            .toString();
+
+        File output = new File(settings.getOutputDir().getAbsolutePath() + File.separator + jarFileName);
+        ZipUtils.zip(tmpOutput, output);
+    }
+
+    private void copyOutput(File tmpOutput) throws IOException {
+        File output = new File(settings.getOutputDir().getAbsolutePath() + File.separator + tmpOutput.getName());
+        FileUtils.copyDirectory(tmpOutput, output);
+    }
+
+    private void generateJavaDoc(File sourceFiles, List<String> subpackages, File tmpOutput) {
+        ILiveDoc livedoc = new LiveDoc(settings.isVerbose(), sourceFiles, tmpOutput, subpackages);
+        livedoc.generate();
+    }
+
+    private String outputName(Artifact artifact) {
+        StringBuffer sb = new StringBuffer(artifact.getArtifactId());
+        sb.append("-");
+        sb.append(artifact.getVersion());
+        sb.append("-javadoc");
+        return sb.toString();
+    }
+
+    private List<String> filterSourceFiles(File sourceFiles) {
+        List<String> subpackages = Arrays.asList(sourceFiles.list(new FilenameFilter() {
+
+            @Override
+            public boolean accept(File dir, String name) {
+                return !name.equals("META-INF");
+            }
+        }));
+        return subpackages;
+    }
+
+    private File extractSourceFiles(Artifact artifact) throws IOException {
+        return ZipUtils.unzipToSeparateFolder(artifact.getFile(), SOURCES_TEMP_DIR);
+    }
+
+    private Artifact downloadSourceArtifact() throws RepositoryException {
+        
+        String artifactCoordinates = parseCoordinates();
+
+        Artifact artifact = new DefaultArtifact(artifactCoordinates);
+        return repoBroker.download(artifact, sourceRepositoryDescriptor, new NullProgressMonitor());
+    }
+
+    private String parseCoordinates() {
+        
+        String coordinates = settings.getMavenCoordinates();
+
+        StringBuffer sb = new StringBuffer(coordinates);
+        int lastColon = coordinates.lastIndexOf(":");
+        sb.insert(lastColon, ":jar:sources");
+        return sb.toString();
+    }
+
+    private void initializeRepository() throws IOException, Exception {
+        repoBroker = RepoBrokerProvider.create(SOURCEREPO_CACHE_DIR, SOURCEREPO_INDEX_DIR);
+        
+        sourceRepositoryDescriptor = new RepositoryDescriptor("sourceRepo",
+                settings.getSourceRepo());
+
+        repoBroker.ensureIndexUpToDate(sourceRepositoryDescriptor, new NullProgressMonitor());
+    }
+
+    private void prepareTempDirectory() {
+        SOURCEREPO_CACHE_DIR.mkdirs();
+        SOURCEREPO_INDEX_DIR.mkdirs();
+         
+        try {
+            if (JAVADOC_TEMP_DIR.exists()){
+                FileUtils.cleanDirectory(JAVADOC_TEMP_DIR);
+            }else{
+                JAVADOC_TEMP_DIR.mkdirs();
+            }
+            if (SOURCES_TEMP_DIR.exists()){
+                FileUtils.cleanDirectory(SOURCES_TEMP_DIR);            
+            }else{
+                SOURCES_TEMP_DIR.mkdirs();
+            }
+        } catch (Exception e) {
+            System.err.print("Couldn't clear livedoc tmp folders: ");
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings({ "unchecked", "static-access" })
+    private CLIOptions parseArguments(IApplicationContext context) {
         Iterator<String[]> iter = context.getArguments().values().iterator();
         String[] args = null;
         if (iter.hasNext()) {
@@ -55,7 +187,7 @@ public class Application implements IApplication {
             System.err.println("No Arguments detected");
         }
 
-        settings = new CLIOptions();
+        CLIOptions settings = new CLIOptions();
         CmdLineParser parser = new CmdLineParser(settings);
         parser.registerHandler(URL.class, ExtURLOptionHandler.class);
         try {
@@ -67,75 +199,7 @@ public class Application implements IApplication {
             parser.printUsage(System.err);
             this.stop();
         }
-
-        CACHE_DIR.mkdirs();
-        INDEX_DIR.mkdirs();
-
-        IRepositoryBroker repoBroker = RepoBrokerProvider.create(CACHE_DIR, INDEX_DIR);
-        RepositoryDescriptor sourceRepositoryDescriptor = new RepositoryDescriptor("sourceRepo",
-                settings.getSourceRepo());
-
-        repoBroker.ensureIndexUpToDate(sourceRepositoryDescriptor, new NullProgressMonitor());
-
-        String coordinates = settings.getMavenCoordinates();
-
-        StringBuffer sb = new StringBuffer(coordinates);
-        int lastColon = coordinates.lastIndexOf(":");
-        sb.insert(lastColon, ":jar:sources");
-
-        Artifact artifact = new DefaultArtifact(sb.toString());
-        artifact = repoBroker.download(artifact, sourceRepositoryDescriptor, new NullProgressMonitor());
-
-        File sourceFiles = ZipUtils.unzipToSeparateFolder(artifact.getFile(), new File(TEMP_DIR));
-
-        List<String> subpackages = Arrays.asList(sourceFiles.list(new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                return !name.equals("META-INF");
-            }
-        }));
-
-        File livedocDir = new File(TEMP_DIR + File.separator + "livedoc_tmp");
-
-        sb.delete(0, sb.length());
-        sb.append(artifact.getArtifactId());
-        sb.append("-");
-        sb.append(artifact.getVersion());
-        sb.append("-javadoc");
-
-        File tmpOutput = new File(livedocDir, sb.toString());
-
-        ILiveDoc livedoc = new LiveDoc(settings.isVerbose(), sourceFiles, tmpOutput, subpackages);
-        livedoc.generate();
-
-        if (settings.getOutputDir() != null) {
-            File output = new File(settings.getOutputDir().getAbsolutePath() + File.separator + sb.toString());
-            FileUtils.copyDirectory(tmpOutput, output);
-        }
-
-        sb.append(".jar");
-
-        File tmpJar = new File(livedocDir, sb.toString());
-        ZipUtils.zip(tmpOutput, tmpJar);
-
-        if (settings.isJarOutput()) {
-            File output = new File(settings.getOutputDir().getAbsolutePath() + File.separator + sb.toString());
-            FileUtils.copyFile(tmpJar, output);
-        }
-
-        if (settings.getUploadRepo() != null) {
-            Artifact uploadArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "javadoc",
-                    "jar", artifact.getVersion());
-            uploadArtifact = uploadArtifact.setFile(tmpOutput);
-            RepositoryDescriptor uploadRepositoryDescriptor = new RepositoryDescriptor("uploadRepo",
-                    settings.getUploadRepo());
-            repoBroker.upload(uploadArtifact, uploadRepositoryDescriptor, new NullProgressMonitor());
-        }
-
-        System.out.println("Done.");
-
-        return IApplication.EXIT_OK;
+        return settings;
     }
 
     /*
@@ -147,7 +211,6 @@ public class Application implements IApplication {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.exit(0);
