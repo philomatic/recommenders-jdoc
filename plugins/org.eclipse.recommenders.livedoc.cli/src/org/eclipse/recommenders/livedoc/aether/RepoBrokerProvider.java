@@ -1,10 +1,9 @@
-package org.eclipse.recommenders.livedoc.utils;
+package org.eclipse.recommenders.livedoc.aether;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.recommenders.internal.livedoc.aether.DefaultRepositoryBroker;
-import org.eclipse.recommenders.livedoc.aether.IRepositoryBroker;
 
 public class RepoBrokerProvider {
 

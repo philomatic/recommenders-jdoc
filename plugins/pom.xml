@@ -18,6 +18,7 @@
 		<module>org.eclipse.recommenders.3rd.tools_jar</module>
 		<module>org.eclipse.recommenders.livedoc</module>
 		<module>org.eclipse.recommenders.livedoc.cli</module>
+		<module>org.eclipse.recommenders.livedoc.taglets.overrides</module>
 	</modules>
 	
 	<profiles>

@@ -16,11 +16,12 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.recommenders.livedoc.ILiveDoc;
 import org.eclipse.recommenders.livedoc.LiveDoc;
 import org.eclipse.recommenders.livedoc.aether.IRepositoryBroker;
+import org.eclipse.recommenders.livedoc.aether.RepoBrokerProvider;
 import org.eclipse.recommenders.livedoc.aether.RepositoryDescriptor;
 import org.eclipse.recommenders.livedoc.args4j.CLIOptions;
 import org.eclipse.recommenders.livedoc.args4j.ExtURLOptionHandler;
-import org.eclipse.recommenders.livedoc.utils.RepoBrokerProvider;
 import org.eclipse.recommenders.utils.Zips;
+
 import org.kohsuke.args4j.CmdLineParser;
 import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.artifact.Artifact;
@@ -53,13 +54,11 @@ public class Application implements IApplication {
         initializeRepository();
 
         Artifact sourceArtifact = downloadSourceArtifact();
-        File sourceFiles = extractSourceFiles(sourceArtifact);
-        List<String> subpackages = filterSourceFiles(sourceFiles);
 
         String outPutFileName = outputName(sourceArtifact);
         File tmpOutput = new File(JAVADOC_TEMP_DIR, outPutFileName);
 
-        generateJavaDoc(sourceFiles, subpackages, tmpOutput);
+        generateJavaDoc(sourceArtifact, tmpOutput);
 
         if (settings.getOutputDir() != null) {
             copyOutput(tmpOutput);
@@ -102,8 +101,17 @@ public class Application implements IApplication {
         FileUtils.copyDirectory(tmpOutput, output);
     }
 
-    private void generateJavaDoc(File sourceFiles, List<String> subpackages, File tmpOutput) {
-        ILiveDoc livedoc = new LiveDoc(settings.isVerbose(), sourceFiles, tmpOutput, subpackages);
+    private void generateJavaDoc(Artifact sourceArtifact, File output) throws IOException {
+        
+        File sourceFiles = extractSourceFiles(sourceArtifact);
+        List<String> subpackages = filterSourceFiles(sourceFiles);
+        
+        ILiveDoc livedoc = new LiveDoc(settings.isVerbose(), sourceFiles, output, subpackages);
+        livedoc.setGroupId(sourceArtifact.getGroupId());
+        livedoc.setArtifactId(sourceArtifact.getArtifactId());
+        livedoc.setArtifactVersion(sourceArtifact.getVersion());
+        livedoc.setModelsRepo(settings.getModelsRepo());
+        
         livedoc.generate();
     }
 
@@ -130,6 +138,7 @@ public class Application implements IApplication {
     }
 
     private File extractSourceFiles(Artifact artifact) throws IOException {
+        
         String fileName = artifact.getFile().getName();
         fileName = StringUtils.removeEnd(fileName, ".jar");
         
@@ -149,7 +158,6 @@ public class Application implements IApplication {
     private String parseCoordinates() {
         
         String coordinates = settings.getMavenCoordinates();
-
         StringBuffer sb = new StringBuffer(coordinates);
         int lastColon = coordinates.lastIndexOf(":");
         sb.insert(lastColon, ":jar:sources");
@@ -161,6 +169,7 @@ public class Application implements IApplication {
         
         sourceRepositoryDescriptor = new RepositoryDescriptor("sourceRepo",
                 settings.getSourceRepo());
+
 
         repoBroker.ensureIndexUpToDate(sourceRepositoryDescriptor, new NullProgressMonitor());
     }

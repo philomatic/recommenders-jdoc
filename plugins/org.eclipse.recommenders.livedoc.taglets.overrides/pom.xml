@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.eclipse.recommenders</groupId>
+		<artifactId>livedoc-plugins</artifactId>
+		<version>0.1.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+	
+	<artifactId>org.eclipse.recommenders.livedoc.taglets.overrides</artifactId>
+	<packaging>eclipse-plugin</packaging>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-compiler-plugin</artifactId>
+					<configuration>
+						<extraClasspathElements>
+							<extraClasspathElement>
+								<groupId>jdk</groupId>
+								<artifactId>tools.jar</artifactId>
+								<version>${java.version}</version>
+								<scope>system</scope>
+								<systemPath>${java.home}/../lib/tools.jar</systemPath>
+							</extraClasspathElement>
+						</extraClasspathElements>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>animal-sniffer-maven-plugin</artifactId>
+					<configuration>
+						<ignores>
+							<ignore>com.sun.tools.doclets.*</ignore>
+							<ignore>com.sun.tools.javadoc.*</ignore>
+						</ignores>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+	
+</project>

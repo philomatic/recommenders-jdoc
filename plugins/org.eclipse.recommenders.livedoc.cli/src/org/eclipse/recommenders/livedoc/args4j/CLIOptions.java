@@ -9,8 +9,11 @@ import org.kohsuke.args4j.Option;
 
 public class CLIOptions {
     
-    @Option(name="-r", handler=ExtURLOptionHandler.class, usage="URL of Maven Repo")
+    @Option(name="-sr", handler=ExtURLOptionHandler.class, usage="URL of Maven Repo")
     private URL sourceRepo;
+    
+    @Option(name="-mr", handler=ExtURLOptionHandler.class, usage="URL of Maven Repo")
+    private URL modelsRepo;
     
     @Option(name="-verbose", usage="Output messages about what Livedoc is doing")
     private boolean verbose;
@@ -33,8 +36,12 @@ public class CLIOptions {
     
     public CLIOptions() {
         try {
-            //mvn central as default URL
-            this.sourceRepo = new URL("http://repo1.maven.org/maven2/");
+            // mvn central as default URL for sources
+            this.setSourceRepo(new URL("http://repo1.maven.org/maven2/"));
+            
+            // eclipse kepler as default URL for models
+            this.setModelsRepo(new URL("http://download.eclipse.org/recommenders/models/kepler/"));
+            
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -81,7 +88,7 @@ public class CLIOptions {
     }
 
     public URL getSourceRepo() {
-        return sourceRepo;
+        return this.sourceRepo;
     }
 
     public void setSourceRepo(URL sourceRepo) {
@@ -94,6 +101,14 @@ public class CLIOptions {
 
     public void setUploadRepo(URL uploadRepo) {
         this.uploadRepo = uploadRepo;
+    }
+
+    public URL getModelsRepo() {
+        return modelsRepo;
+    }
+
+    public void setModelsRepo(URL modelsRepo) {
+        this.modelsRepo = modelsRepo;
     }
 
 }

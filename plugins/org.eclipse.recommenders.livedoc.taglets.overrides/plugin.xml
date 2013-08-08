@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.recommenders.livedoc.taglets">
+      <taglet
+            Name="Code Recommenders Overrides Taglet"
+            taglet="org.eclipse.recommenders.livedoc.taglets.overrides.OverridesTaglet">
+      </taglet>
+   </extension>
+
+</plugin>

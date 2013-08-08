@@ -26,7 +26,7 @@ public class ExtURLOptionHandler extends URLOptionHandler {
 
             // try a file:// URL instead
             try {
-                setter.addValue(new URL("file://" + param));
+                setter.addValue(new URL("file:///" + param));
                 return 1;
             } catch (MalformedURLException urlException) {
                 throw cmdLineException;
