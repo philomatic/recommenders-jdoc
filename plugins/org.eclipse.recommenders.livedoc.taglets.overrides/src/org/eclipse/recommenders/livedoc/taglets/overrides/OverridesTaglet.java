@@ -3,8 +3,6 @@ package org.eclipse.recommenders.livedoc.taglets.overrides;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.MessageFormat;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -24,16 +22,20 @@ import org.eclipse.recommenders.utils.Recommendation;
 import org.eclipse.recommenders.utils.Recommendations;
 import org.eclipse.recommenders.utils.names.IMethodName;
 import org.eclipse.recommenders.utils.names.ITypeName;
+import org.eclipse.recommenders.utils.names.Names;
+import org.eclipse.recommenders.utils.names.VmMethodName;
 import org.eclipse.recommenders.utils.names.VmTypeName;
 import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Doc;
-import com.sun.javadoc.SeeTag;
+import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.Parameter;
 import com.sun.javadoc.Tag;
-import com.sun.tools.doclets.internal.toolkit.taglets.SeeTaglet;
 import com.sun.tools.doclets.internal.toolkit.taglets.TagletOutput;
 import com.sun.tools.doclets.internal.toolkit.taglets.TagletWriter;
 
@@ -48,6 +50,7 @@ public class OverridesTaglet implements IRecommendersTaglet {
     private String artifactVersion;
     private String artifactId;
     private SingleZipOverrideModelProvider modelProvider;
+    
     public OverridesTaglet() {
     }
 
@@ -63,7 +66,7 @@ public class OverridesTaglet implements IRecommendersTaglet {
 
     @Override
     public boolean inMethod() {
-        return false;
+        return true;
     }
 
     @Override
@@ -98,64 +101,145 @@ public class OverridesTaglet implements IRecommendersTaglet {
 
     @Override
     public TagletOutput getTagletOutput(Doc holder, TagletWriter writer) throws IllegalArgumentException {
+
+        if (holder.isOrdinaryClass()) {
+            return generateClassDoc(holder, writer);
+            
+        } else if (holder.isMethod() && !((MethodDoc) holder).isAbstract()) {
+            return generateMethodDoc(holder, writer);
+        }
+        return null;
+    }
+
+    private TagletOutput generateClassDoc(Doc holder, TagletWriter writer) {
         
-        String typeName = "L" + holder.toString().replace(".", "/");
-
-        ProjectCoordinate coordinate = new ProjectCoordinate(groupId, artifactId, artifactVersion);
-        ITypeName name = VmTypeName.get(typeName);
-
-        BasedTypeName key = new BasedTypeName(coordinate, name);
-
-        Optional<IOverrideModel> model = modelProvider.acquireModel(key);
-
+        ITypeName typeName = VmTypeName.get(extractTypeName(holder));
+        Optional<IOverrideModel> model = getModelForTypeName(typeName);
+        
         StringBuilder sb = new StringBuilder();
         if (model.isPresent()) {
             List<Recommendation<IMethodName>> recommendOverrides = model.get().recommendOverrides();
-
+            
             Collections.sort(recommendOverrides, new Comparator<Recommendation<IMethodName>>() {
-
+                
                 @Override
                 public int compare(Recommendation<IMethodName> o1, Recommendation<IMethodName> o2) {
                     return (Recommendations.asPercentage(o2) - Recommendations.asPercentage(o1));
                 }
             });
-
+            
             sb.append("<dl>");
             sb.append("<dt>Method Overrides class documentation:</dt>");
             sb.append("<dd>");
-
+            
             for (Iterator<Recommendation<IMethodName>> iterator = recommendOverrides.iterator(); iterator.hasNext();) {
-
+                
                 Recommendation<IMethodName> recommendation = (Recommendation<IMethodName>) iterator.next();
-
+                
                 int relevance = Recommendations.asPercentage(recommendation);
-
+                
                 // sb.append("{@link #");
                 IMethodName method = recommendation.getProposal();
-
+                
                 sb.append(method.getName());
                 sb.append("(");
-
+                
                 if (methodHasParameters(method)) {
                     sb.append("...");
                 }
                 sb.append(")");
                 // sb.append("}");
-
+                
                 sb.append(" - ").append("<font color=\"#0000FF\">").append(relevance + "%").append("</font>");
-
+                
                 if (iterator.hasNext()) {
                     sb.append(", ");
                 }
-
+                
             }
-
-            sb.append("</dd>");
+            sb.append("</dd>")
+                .append("</dl>");
         }
-
+        
         TagletOutput output = writer.getOutputInstance();
         output.setOutput(sb.toString());
         return output;
+    }
+
+    private TagletOutput generateMethodDoc(Doc holder, TagletWriter writer) {
+
+        MethodDoc methodDoc = (MethodDoc) holder;
+        IMethodName methodName = getMethodFromMethodDoc(methodDoc);
+
+        ITypeName methodDeclaringType = VmTypeName.get(extractTypeName(methodDoc));
+        Optional<IOverrideModel> optional = getModelForTypeName(methodDeclaringType);
+
+        StringBuilder sb = new StringBuilder();
+
+        if (optional.isPresent()) {
+            IOverrideModel model = optional.get();
+            ImmutableSet<IMethodName> knownMethods = model.getKnownMethods();
+
+            if (knownMethods.contains(methodName)) {
+
+                int relevance = 0;
+                for (Recommendation<IMethodName> recommendation : model.recommendOverrides()) {
+                    if (recommendation.getProposal().equals(methodName)) {
+                        relevance = Recommendations.asPercentage(recommendation);
+                        break;
+                    }
+                }
+                sb.append("<dl>").append("<dt>Subclass overrides probability:</dt>").append("<dd>")
+                        .append("<font color=\"#0000FF\">").append(relevance + "%").append("</font>").append("</dd>")
+                        .append("</dl>");
+            }
+        }
+     
+        TagletOutput output = writer.getOutputInstance();
+        output.setOutput(sb.toString());
+        return output;
+    }
+
+    private IMethodName getMethodFromMethodDoc(MethodDoc methodDoc) {
+        String srcDeclaringType = StringUtils.substringBeforeLast(methodDoc.qualifiedName(), ".");
+        String methodName = StringUtils.substringAfterLast(methodDoc.qualifiedName(), ".");
+        String[] parameters = asStringArray(methodDoc.parameters());
+        
+        return VmMethodName.get(Names.src2vmMethod(srcDeclaringType, methodName, parameters, methodDoc.returnType().qualifiedTypeName()));
+    }
+
+    private String[] asStringArray(Parameter[] parameters) {
+
+        String[] result = new String[parameters.length];
+
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter parameter = parameters[i];
+
+            result[i] = parameter.type().qualifiedTypeName();
+        }
+
+        return result;
+    }
+
+
+    private Optional<IOverrideModel> getModelForTypeName(ITypeName typeName) {
+        ProjectCoordinate coordinate = new ProjectCoordinate(groupId, artifactId, artifactVersion);
+
+        BasedTypeName key = new BasedTypeName(coordinate, typeName);
+
+        Optional<IOverrideModel> model = modelProvider.acquireModel(key);
+        return model;
+    }
+
+    private String extractTypeName(Doc holder) {
+        if (holder.isMethod()) {
+            String typeName = StringUtils.substringBefore(holder.toString(), "(");
+            typeName = StringUtils.substringBeforeLast(typeName, ".");
+            return Names.src2vmType(typeName);
+        } else if (holder.isOrdinaryClass()) {
+            return Names.src2vmType(holder.toString());
+        } 
+            return null;
     }
 
     private boolean methodHasParameters(IMethodName method) {
