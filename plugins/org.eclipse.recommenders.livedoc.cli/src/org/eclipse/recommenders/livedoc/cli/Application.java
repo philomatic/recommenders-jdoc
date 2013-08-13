@@ -120,7 +120,10 @@ public class Application implements IApplication {
 
             @Override
             public boolean accept(File dir, String name) {
-                return !name.equals("META-INF");
+                return !(name.equals("META-INF") 
+                        || name.equals("about.html")
+                        || name.equals("plugin.properties")
+                        || name.equals("about_files"));
             }
         }));
         return subpackages;

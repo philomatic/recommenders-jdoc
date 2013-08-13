@@ -72,6 +72,7 @@ public class LiveDoc implements ILiveDoc {
         }
         javadocArgs.add(sb.toString());
         
+        javadocArgs.add("-private");
         javadocArgs.add("-sourcepath");
         javadocArgs.add(sourceDir.getAbsolutePath());
 
