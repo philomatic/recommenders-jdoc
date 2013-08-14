@@ -34,6 +34,7 @@ import com.google.common.collect.ImmutableSet;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Doc;
 import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.Tag;
 import com.sun.tools.doclets.internal.toolkit.taglets.TagletOutput;
@@ -44,13 +45,13 @@ public class OverridesTaglet implements IRecommendersTaglet {
     private static final File TEMP_DIR = new File("java.io.tmpdir", "livedoc");
     private static final File MODELSREPO_CACHE_DIR = new File(TEMP_DIR, "modelsRepo/cache");
     private static final File MODELSREPO_INDEX_DIR = new File(TEMP_DIR, "modelsRepo/indexes");
-    
+
     private URL modelsRepo;
     private String groupId;
     private String artifactVersion;
     private String artifactId;
     private SingleZipOverrideModelProvider modelProvider;
-    
+
     public OverridesTaglet() {
     }
 
@@ -76,7 +77,7 @@ public class OverridesTaglet implements IRecommendersTaglet {
 
     @Override
     public boolean inPackage() {
-        return false;
+        return true;
     }
 
     @Override
@@ -103,72 +104,120 @@ public class OverridesTaglet implements IRecommendersTaglet {
     public TagletOutput getTagletOutput(Doc holder, TagletWriter writer) throws IllegalArgumentException {
 
         if (holder.isOrdinaryClass()) {
-            return generateClassDoc(holder, writer);
-            
+            return generateClassDoc((ClassDoc) holder, writer);
         } else if (holder.isMethod() && !((MethodDoc) holder).isAbstract()) {
-            return generateMethodDoc(holder, writer);
+            return generateMethodDoc((MethodDoc) holder, writer);
+        } else if (holder instanceof PackageDoc) {
+            return generatePackageDoc((PackageDoc) holder, writer);
         }
         return null;
     }
 
-    private TagletOutput generateClassDoc(Doc holder, TagletWriter writer) {
-        
-        ITypeName typeName = VmTypeName.get(extractTypeName(holder));
-        Optional<IOverrideModel> model = getModelForTypeName(typeName);
-        
+    private TagletOutput generatePackageDoc(PackageDoc packageDoc, TagletWriter writer) {
+
         StringBuilder sb = new StringBuilder();
-        if (model.isPresent()) {
-            List<Recommendation<IMethodName>> recommendOverrides = model.get().recommendOverrides();
-            
-            Collections.sort(recommendOverrides, new Comparator<Recommendation<IMethodName>>() {
-                
-                @Override
-                public int compare(Recommendation<IMethodName> o1, Recommendation<IMethodName> o2) {
-                    return (Recommendations.asPercentage(o2) - Recommendations.asPercentage(o1));
-                }
-            });
-            
-            sb.append("<dl>");
-            sb.append("<dt>Method Overrides class documentation:</dt>");
-            sb.append("<dd>");
-            
-            for (Iterator<Recommendation<IMethodName>> iterator = recommendOverrides.iterator(); iterator.hasNext();) {
-                
-                Recommendation<IMethodName> recommendation = (Recommendation<IMethodName>) iterator.next();
-                
-                int relevance = Recommendations.asPercentage(recommendation);
-                
-                // sb.append("{@link #");
-                IMethodName method = recommendation.getProposal();
-                
-                sb.append(method.getName());
-                sb.append("(");
-                
-                if (methodHasParameters(method)) {
-                    sb.append("...");
-                }
-                sb.append(")");
-                // sb.append("}");
-                
-                sb.append(" - ").append("<font color=\"#0000FF\">").append(relevance + "%").append("</font>");
-                
-                if (iterator.hasNext()) {
-                    sb.append(", ");
-                }
-                
+
+        sb.append("<h2 style=\"font-size:200%; color:blue\" title=")
+        .append("\"Code Recommenders\">")
+        .append("Code Recommenders")
+        .append("</h2>")
+        .append("For the following types exists overrides statistics from Code Recommenders:")
+        .append("<ul>");
+
+        for (ClassDoc classDoc : packageDoc.allClasses()) {
+            ITypeName typeName = VmTypeName.get(extractTypeName(classDoc));
+            Optional<IOverrideModel> model = getModelForTypeName(typeName);
+
+            if (model.isPresent()){
+                sb.append("<li>")
+                    .append(model.get().getType().getIdentifier())
+                    .append("</li>");
             }
-            sb.append("</dd>")
-                .append("</dl>");
         }
-        
+
+        sb.append("</ul>");
+
         TagletOutput output = writer.getOutputInstance();
         output.setOutput(sb.toString());
         return output;
     }
 
-    private TagletOutput generateMethodDoc(Doc holder, TagletWriter writer) {
+    private TagletOutput generateClassDoc(ClassDoc holder, TagletWriter writer) {
 
-        MethodDoc methodDoc = (MethodDoc) holder;
+        ITypeName typeName = VmTypeName.get(extractTypeName(holder));
+        Optional<IOverrideModel> model = getModelForTypeName(typeName);
+
+        StringBuilder sb = new StringBuilder();
+        if (model.isPresent()) {
+            List<Recommendation<IMethodName>> recommendOverrides = model.get().recommendOverrides();
+
+            Collections.sort(recommendOverrides, new Comparator<Recommendation<IMethodName>>() {
+
+                @Override
+                public int compare(Recommendation<IMethodName> o1, Recommendation<IMethodName> o2) {
+                    return (Recommendations.asPercentage(o2) - Recommendations.asPercentage(o1));
+                }
+            });
+
+            sb.append("<dl>");
+            sb.append("<dt>Method Overrides class documentation:</dt>");
+            sb.append("<dd>");
+
+            for (Iterator<Recommendation<IMethodName>> iterator = recommendOverrides.iterator(); iterator.hasNext();) {
+
+                Recommendation<IMethodName> recommendation = (Recommendation<IMethodName>) iterator.next();
+
+                int relevance = Recommendations.asPercentage(recommendation);
+
+                // sb.append("{@link #");
+                IMethodName method = recommendation.getProposal();
+
+                sb.append(methodSignature(method));
+                // sb.append("}");
+
+                sb.append(" - ").append("<font color=\"#0000FF\">").append(relevance + "%").append("</font>");
+
+                if (iterator.hasNext()) {
+                    sb.append(", ");
+                }
+
+            }
+            sb.append("</dd>")
+                .append("</dl>");
+        }
+
+        TagletOutput output = writer.getOutputInstance();
+        output.setOutput(sb.toString());
+        return output;
+    }
+
+    private String methodSignature(IMethodName method) {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("<code>");
+        sb.append(method.getName());
+        sb.append("(");
+
+        if (methodHasParameters(method)) {
+            for (int i = 0; i < method.getParameterTypes().length; i++) {
+
+                ITypeName parameter = method.getParameterTypes()[i];
+                sb.append(Names.vm2srcQualifiedType(parameter));
+                if (i < (method.getParameterTypes().length - 1)) {
+                    sb.append(", ");
+                }
+            }
+
+        }
+        sb.append(")");
+        sb.append("</code>");
+
+        return sb.toString();
+    }
+
+    private TagletOutput generateMethodDoc(MethodDoc methodDoc, TagletWriter writer) {
+
         IMethodName methodName = getMethodFromMethodDoc(methodDoc);
 
         ITypeName methodDeclaringType = VmTypeName.get(extractTypeName(methodDoc));
@@ -189,12 +238,17 @@ public class OverridesTaglet implements IRecommendersTaglet {
                         break;
                     }
                 }
-                sb.append("<dl>").append("<dt>Subclass overrides probability:</dt>").append("<dd>")
-                        .append("<font color=\"#0000FF\">").append(relevance + "%").append("</font>").append("</dd>")
-                        .append("</dl>");
+                sb.append("<dl>")
+                    .append("<dt>Subclass overrides probability:</dt>")
+                    .append("<dd>")
+                    .append("<font color=\"#0000FF\">")
+                    .append(relevance + "%")
+                    .append("</font>")
+                    .append("</dd>")
+                    .append("</dl>");
             }
         }
-     
+
         TagletOutput output = writer.getOutputInstance();
         output.setOutput(sb.toString());
         return output;
@@ -204,8 +258,9 @@ public class OverridesTaglet implements IRecommendersTaglet {
         String srcDeclaringType = StringUtils.substringBeforeLast(methodDoc.qualifiedName(), ".");
         String methodName = StringUtils.substringAfterLast(methodDoc.qualifiedName(), ".");
         String[] parameters = asStringArray(methodDoc.parameters());
-        
-        return VmMethodName.get(Names.src2vmMethod(srcDeclaringType, methodName, parameters, methodDoc.returnType().qualifiedTypeName()));
+
+        return VmMethodName.get(Names.src2vmMethod(srcDeclaringType, methodName, parameters, methodDoc.returnType()
+                .qualifiedTypeName()));
     }
 
     private String[] asStringArray(Parameter[] parameters) {
@@ -220,7 +275,6 @@ public class OverridesTaglet implements IRecommendersTaglet {
 
         return result;
     }
-
 
     private Optional<IOverrideModel> getModelForTypeName(ITypeName typeName) {
         ProjectCoordinate coordinate = new ProjectCoordinate(groupId, artifactId, artifactVersion);
@@ -238,8 +292,8 @@ public class OverridesTaglet implements IRecommendersTaglet {
             return Names.src2vmType(typeName);
         } else if (holder.isOrdinaryClass()) {
             return Names.src2vmType(holder.toString());
-        } 
-            return null;
+        }
+        return null;
     }
 
     private boolean methodHasParameters(IMethodName method) {
@@ -263,42 +317,41 @@ public class OverridesTaglet implements IRecommendersTaglet {
 
     @Override
     public void initialize() {
-        
+
         Artifact artifact = getModelsArtifact();
-        
+
         File models = artifact.getFile();
         modelProvider = new SingleZipOverrideModelProvider(models);
-        
+
         try {
             modelProvider.open();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
     }
 
     private Artifact getModelsArtifact() {
         MODELSREPO_CACHE_DIR.mkdirs();
         MODELSREPO_INDEX_DIR.mkdirs();
-        
+
         IRepositoryBroker repoBroker = null;
         try {
             repoBroker = RepoBrokerProvider.create(MODELSREPO_CACHE_DIR, MODELSREPO_INDEX_DIR);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         RepositoryDescriptor modelsRepoDescriptor = new RepositoryDescriptor("modelsRepo", getModelsRepo());
-        
+
         try {
             repoBroker.ensureIndexUpToDate(modelsRepoDescriptor, new NullProgressMonitor());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         StringBuffer sb = new StringBuffer();
-        
-        
+
         sb.append(groupId)
             .append(":")
             .append(artifactId)
@@ -308,9 +361,9 @@ public class OverridesTaglet implements IRecommendersTaglet {
             .append("ovrm")
             .append(":")
             .append(calcBaseVersion(artifactVersion));
-        
+
         Artifact artifact = new DefaultArtifact(sb.toString());
-        
+
         try {
             artifact = repoBroker.download(artifact, modelsRepoDescriptor, new NullProgressMonitor());
         } catch (RepositoryException e) {
@@ -320,9 +373,9 @@ public class OverridesTaglet implements IRecommendersTaglet {
     }
 
     private String calcBaseVersion(String version) {
-    
+
         return StringUtils.substringBefore(version, ".") + ".0.0";
-        
+
     }
 
     public URL getModelsRepo() {
@@ -343,5 +396,4 @@ public class OverridesTaglet implements IRecommendersTaglet {
         }
 
     }
-
 }
