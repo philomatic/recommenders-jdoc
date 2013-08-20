@@ -6,6 +6,10 @@
       <taglet
             Name="Code Recommenders Overrides Taglet"
             taglet="org.eclipse.recommenders.livedoc.taglets.overrides.OverridesTaglet">
+      <taglet
+            id="ovrm"
+            name="Code Recommenders Override Methods Taglet"
+            taglet="org.eclipse.recommenders.livedoc.taglets.overrides.OverrideMethods">
       </taglet>
    </extension>
 

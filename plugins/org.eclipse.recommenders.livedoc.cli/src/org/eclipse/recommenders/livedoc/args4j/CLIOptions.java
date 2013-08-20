@@ -6,6 +6,7 @@ import java.net.URL;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 public class CLIOptions {
     
@@ -33,6 +34,10 @@ public class CLIOptions {
     // MavenCoordinates
     @Argument(index=0, metaVar="[MavenCoordinate]", required=true, usage="<GroupId>:<ArtifactId>:<Version>")
     private String mavenCoordinates;
+    
+    // Selected Taglets
+    @Option(name="-t", handler=StringArrayOptionHandler.class, metaVar="\"ovrm ovrp ...\"", usage="Choose Recommenders Taglets (Default: Use all registered Taglets): \n ovrm: Method Overrides \n ovrp: Method Override Patterns")
+    private String[] taglets;
     
     public CLIOptions() {
         try {
@@ -109,6 +114,14 @@ public class CLIOptions {
 
     public void setModelsRepo(URL modelsRepo) {
         this.modelsRepo = modelsRepo;
+    }
+
+    public String[] getTaglets() {
+        return taglets;
+    }
+
+    public void setTaglets(String[] taglets) {
+        this.taglets = taglets;
     }
 
 }

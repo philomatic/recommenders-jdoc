@@ -2,9 +2,6 @@ package org.eclipse.recommenders.livedoc;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
-
-import com.sun.tools.doclets.Taglet;
 
 public interface ILiveDoc {
     
@@ -20,4 +17,5 @@ public interface ILiveDoc {
     void setArtifactId(String artifactId);
     void setArtifactVersion(String version);
     void setModelsRepo(URL modelsRepo);
+    void setSelectedTaglets(String[] taglets);
 }

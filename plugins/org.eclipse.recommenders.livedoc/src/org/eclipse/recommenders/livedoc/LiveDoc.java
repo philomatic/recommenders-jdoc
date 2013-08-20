@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.recommenders.livedoc.javadoc.RecommendersDoclet;
+
 import com.google.common.collect.Lists;
-import com.sun.tools.doclets.Taglet;
 
 /**
  * @recommenders.test
@@ -24,6 +25,7 @@ public class LiveDoc implements ILiveDoc {
     private String artifactId;
     private String artifactVersion;
     private URL modelsRepo;
+    private String[] selectedTaglets;
     
     public LiveDoc(boolean verbose, File sourceFiles, File outputDir, List<String> subpackages) {
         super();
@@ -54,6 +56,8 @@ public class LiveDoc implements ILiveDoc {
         if (System.getProperty("recommenders.livedoc.modelsRepo") == null) {
             System.setProperty("recommenders.livedoc.modelsRepo", modelsRepo.toExternalForm());
         }
+        
+        RecommendersDoclet.instance().getTagletManager().setSelectedTaglets(selectedTaglets);
         
         @SuppressWarnings("unused")
         int returnCode = com.sun.tools.javadoc.Main.execute(this.getClass().getClassLoader(), buildArgs());
@@ -160,5 +164,10 @@ public class LiveDoc implements ILiveDoc {
         this.modelsRepo = modelsRepo;
         
         
+    }
+
+    @Override
+    public void setSelectedTaglets(String[] taglets) {
+        this.selectedTaglets = taglets;
     }
 }

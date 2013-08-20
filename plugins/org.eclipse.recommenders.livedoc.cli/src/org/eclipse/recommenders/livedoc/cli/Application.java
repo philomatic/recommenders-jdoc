@@ -111,6 +111,7 @@ public class Application implements IApplication {
         livedoc.setArtifactId(sourceArtifact.getArtifactId());
         livedoc.setArtifactVersion(sourceArtifact.getVersion());
         livedoc.setModelsRepo(settings.getModelsRepo());
+        livedoc.setSelectedTaglets(settings.getTaglets());
         
         livedoc.generate();
     }

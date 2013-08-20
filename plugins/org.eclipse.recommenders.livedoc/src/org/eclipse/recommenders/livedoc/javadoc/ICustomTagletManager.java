@@ -4,5 +4,6 @@ import java.util.List;
 
 public interface ICustomTagletManager {
 
-    List<IRecommendersTaglet> getCustomTaglets();
+    List<RecommendersTaglet> getCustomTaglets();
+    void setSelectedTaglets(String[] taglets);
 }
