@@ -63,6 +63,9 @@ public class Application implements IApplication {
 
         if (settings.getOutputDir() != null) {
             FileUtils.copyDirectoryToDirectory(tmpOutput, settings.getOutputDir());
+            File output = new File(settings.getOutputDir(), createDirectoryHierarchy(sourceArtifact));
+            output.mkdirs();
+            FileUtils.copyDirectory(tmpOutput, output);
         }
         if (settings.isJarOutput() || settings.getUploadRepo() != null) {
             File jarFile = jarOutput(tmpOutput);
@@ -102,6 +105,16 @@ public class Application implements IApplication {
         Zips.zip(directory, output);
         return output;
     }
+
+    private String createDirectoryHierarchy(Artifact sourceArtifact) {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append(sourceArtifact.getGroupId().replace(".", File.separator))
+        .append(File.separator)
+        .append(sourceArtifact.getArtifactId())
+        .append(File.separator)
+        .append(sourceArtifact.getBaseVersion());
+        return sb.toString();
     }
 
     private void generateJavaDoc(Artifact sourceArtifact, File output) throws IOException {
