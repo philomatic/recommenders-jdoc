@@ -6,8 +6,11 @@ import static org.eclipse.recommenders.utils.Checks.ensureIsInRange;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -87,23 +90,32 @@ public class OverridePatterns extends RecommendersAetherTaglet {
         
         if (overridePatterns.isPresent()){
             
-            sb.append("<dl>")
-                .append("<dt>Method override patterns:</dt>")
-                .append("<dd>");
+            sb.append("<h5>Method override patterns:</h5>")
+            .append("The following groups of methods are frequently overriden together:")
+            .append("<br>")
+            .append("<br>")
+            .append("<ul>");
             
             MethodPattern[] methodPatterns = overridePatterns.get().getPatterns();
             
             for (int i = 0; i < methodPatterns.length; i++) {
                 MethodPattern methodPattern = methodPatterns[i];
                 
-                sb.append("<b>")
-                .append("Number of Observations: " + methodPattern.getNumberOfObservations())
-                .append("</b>")
+                sb.append("<li>");
+                sb.append("<b>");
+                sb.append("Pattern #" + (i+1));
+                sb.append(", ");
+                sb.append("</b>");
+                sb.append(methodPattern.getNumberOfObservations() + " times observed");
+
+                sb.append("<br>")
                 .append("<br>");
                 
-                Map<IMethodName, Double> methods = methodPattern.getMethods();
+                List<Entry<IMethodName, Double>> methods = new ArrayList<Entry<IMethodName, Double>>(methodPattern.getMethods().entrySet());
+                sortMethods(methods);
+
                 
-                for (Iterator<Entry<IMethodName, Double>> iterator = methods.entrySet().iterator(); iterator.hasNext();) {
+                for (Iterator<Entry<IMethodName, Double>> iterator = methods.iterator(); iterator.hasNext();) {
                     Entry<IMethodName, Double> entry  = (Entry<IMethodName, Double>) iterator.next();
                     
                     sb.append(LiveDocUtils.methodSignature(entry.getKey())) 
@@ -122,15 +134,32 @@ public class OverridePatterns extends RecommendersAetherTaglet {
                     sb.append("<br>")
                         .append("<br>");
                 }
-                
+             sb.append("</li>");   
             }
-            sb.append("</dd>")
-                .append("</dl>");
+            sb.append("</ul>");
         }
+        
+        
         
         TagletOutput output = writer.getOutputInstance();
         output.setOutput(sb.toString());
         return output;
+    }
+
+    private void sortMethods(List<Entry<IMethodName, Double>> methods) {
+        Collections.sort(methods, new Comparator<Entry<IMethodName, Double>>() {
+
+            @Override
+            public int compare(Entry<IMethodName, Double> o1, Entry<IMethodName, Double> o2) {
+                if (!o1.getValue().equals(o2.getValue())){
+                    return o2.getValue().compareTo(o1.getValue());
+                }else{
+                    return o1.getKey().getName().compareTo(o2.getKey().getName());
+                }
+            }
+            
+        });
+        
     }
 
     private int asPercentage(Entry<IMethodName, Double> entry) {

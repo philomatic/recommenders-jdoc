@@ -133,15 +133,15 @@ public class OverrideMethods extends RecommendersAetherTaglet {
                 }
             });
 
-            sb.append("<dl>")
-            .append("<dt>Method override recommendations</dt>")
-            .append("<br>")
+            sb.append("<h5>Method override recommendations</h5>")
             .append("The following methods are frequently overriden by subclasses of ")
             .append("<code>")
             .append(typeName.getClassName())
             .append("</code>")
             .append(":")
-            .append("<dd>");
+            .append("<br>")
+            .append("<br>")
+            .append("<ul>");
 
             for (Iterator<Recommendation<IMethodName>> iterator = recommendOverrides.iterator(); iterator.hasNext();) {
 
@@ -152,6 +152,7 @@ public class OverrideMethods extends RecommendersAetherTaglet {
                 // sb.append("{@link #");
                 IMethodName method = recommendation.getProposal();
 
+                sb.append("<li>");
                 sb.append(LiveDocUtils.methodSignature(method));
                 // sb.append("}");
 
@@ -161,9 +162,9 @@ public class OverrideMethods extends RecommendersAetherTaglet {
                     sb.append(", ");
                 }
 
+                sb.append("</li>");
             }
-            sb.append("</dd>")
-                .append("</dl>");
+            sb.append("</ul>");
         }
 
         TagletOutput output = writer.getOutputInstance();
