@@ -30,6 +30,6 @@ public abstract class RecommendersTaglet implements Taglet, Comparable<Recommend
     
     @Override
     public int compareTo(RecommendersTaglet o) {
-        return Integer.compare(this.getRanking(), o.getRanking());
+        return (Integer.valueOf(this.getRanking()).compareTo(o.getRanking()));
     }
 }

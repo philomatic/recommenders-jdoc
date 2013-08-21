@@ -19,8 +19,8 @@ import org.eclipse.recommenders.apidocs.ClassOverridePatterns;
 import org.eclipse.recommenders.apidocs.MethodPattern;
 import org.eclipse.recommenders.livedoc.javadoc.RecommendersAetherTaglet;
 import org.eclipse.recommenders.livedoc.utils.LiveDocUtils;
-import org.eclipse.recommenders.models.BasedTypeName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.utils.IOUtils;
 import org.eclipse.recommenders.utils.Zips;
 import org.eclipse.recommenders.utils.gson.GsonUtil;
@@ -81,7 +81,7 @@ public class OverridePatterns extends RecommendersAetherTaglet {
         ProjectCoordinate coordinate = new ProjectCoordinate(groupId, artifactId, artifactVersion);
         ITypeName typeName = VmTypeName.get(LiveDocUtils.extractTypeName(holder));
         
-        BasedTypeName key = new BasedTypeName(coordinate, typeName);
+        UniqueTypeName key = new UniqueTypeName(coordinate, typeName);
         
         Optional<ClassOverridePatterns> overridePatterns = loadModel(modelsZip, key);
 
@@ -168,7 +168,7 @@ public class OverridePatterns extends RecommendersAetherTaglet {
         return (int) Math.round(rel * 100);
     }
 
-    protected Optional<ClassOverridePatterns> loadModel(ZipFile zip, BasedTypeName key) {
+    protected Optional<ClassOverridePatterns> loadModel(ZipFile zip, UniqueTypeName key) {
         String path = Zips.path(key.getName(), ".json");
         ZipEntry entry = zip.getEntry(path);
         if (entry == null) {

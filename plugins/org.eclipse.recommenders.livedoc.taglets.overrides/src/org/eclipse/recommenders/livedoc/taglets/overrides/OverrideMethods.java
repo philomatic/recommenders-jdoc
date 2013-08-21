@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.eclipse.recommenders.livedoc.javadoc.RecommendersAetherTaglet;
 import org.eclipse.recommenders.livedoc.utils.LiveDocUtils;
-import org.eclipse.recommenders.models.BasedTypeName;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
 import org.eclipse.recommenders.overrides.IOverrideModel;
 import org.eclipse.recommenders.overrides.SingleZipOverrideModelProvider;
@@ -213,7 +213,7 @@ public class OverrideMethods extends RecommendersAetherTaglet {
     private Optional<IOverrideModel> ovrmModel(ITypeName typeName) {
         ProjectCoordinate coordinate = new ProjectCoordinate(groupId, artifactId, artifactVersion);
 
-        BasedTypeName key = new BasedTypeName(coordinate, typeName);
+        UniqueTypeName key = new UniqueTypeName(coordinate, typeName);
 
         Optional<IOverrideModel> model = modelProvider.acquireModel(key);
         return model;

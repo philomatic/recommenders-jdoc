@@ -62,7 +62,6 @@ public class Application implements IApplication {
         generateJavaDoc(sourceArtifact, tmpOutput);
 
         if (settings.getOutputDir() != null) {
-            FileUtils.copyDirectoryToDirectory(tmpOutput, settings.getOutputDir());
             File output = new File(settings.getOutputDir(), createDirectoryHierarchy(sourceArtifact));
             output.mkdirs();
             FileUtils.copyDirectory(tmpOutput, output);
