@@ -4,8 +4,10 @@
    <extension
          point="org.eclipse.recommenders.livedoc.taglets">
       <taglet
-            Name="Code Recommenders Overrides Taglet"
-            taglet="org.eclipse.recommenders.livedoc.taglets.overrides.OverridesTaglet">
+            id="ovrp"
+            name="Code Recommenders Method Override Patterns Taglet"
+            taglet="org.eclipse.recommenders.livedoc.taglets.overrides.OverridePatterns">
+      </taglet>
       <taglet
             id="ovrm"
             name="Code Recommenders Override Methods Taglet"
