@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.recommenders.livedoc.taglets">
+      <taglet
+            id="ovrp"
+            name="Code Recommenders Method Override Patterns Taglet"
+            taglet="org.eclipse.recommenders.livedoc.taglets.overrides.OverridePatterns">
+      </taglet>
+      <taglet
+            id="ovrm"
+            name="Code Recommenders Override Methods Taglet"
+            taglet="org.eclipse.recommenders.livedoc.taglets.overrides.OverrideMethods">
+      </taglet>
+   </extension>
+
+</plugin>

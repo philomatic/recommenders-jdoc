@@ -9,11 +9,11 @@
    <launcherArgs>
       <programArgs>-nl
 en</programArgs>
+      <vmArgs>-Dfile.encoding=UTF8</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
-
 
    <launcher name="livedoc">
       <solaris/>

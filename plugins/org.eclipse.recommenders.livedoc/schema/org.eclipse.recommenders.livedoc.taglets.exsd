@@ -49,7 +49,7 @@
 
    <element name="taglet">
       <complexType>
-         <attribute name="Name" type="string" use="required">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
                   
@@ -62,8 +62,15 @@
                   
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn=":com.sun.tools.doclets.internal.toolkit.taglets.Taglet"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.recommenders.livedoc.javadoc.RecommendersTaglet:"/>
                </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
             </annotation>
          </attribute>
       </complexType>

@@ -19,7 +19,7 @@ public class DefaultProviderSelectionStrategy {
                 return new RemoteRepositoryContentsProvider(url, indexBasedir);
             }
         } catch (Exception e) {
-            throw Throws.throwIllegalStateException("Failed to create content provider", e);
+            throw Throws.throwIllegalStateException("Failed to create content provider: %s", e);
         }
     }
 }

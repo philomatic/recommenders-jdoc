@@ -6,11 +6,15 @@ import java.net.URL;
 
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 public class CLIOptions {
     
-    @Option(name="-r", handler=ExtURLOptionHandler.class, usage="URL of Maven Repo")
+    @Option(name="-sr", handler=ExtURLOptionHandler.class, usage="URL of Maven Repo")
     private URL sourceRepo;
+    
+    @Option(name="-mr", handler=ExtURLOptionHandler.class, usage="URL of Maven Repo")
+    private URL modelsRepo;
     
     @Option(name="-verbose", usage="Output messages about what Livedoc is doing")
     private boolean verbose;
@@ -31,10 +35,18 @@ public class CLIOptions {
     @Argument(index=0, metaVar="[MavenCoordinate]", required=true, usage="<GroupId>:<ArtifactId>:<Version>")
     private String mavenCoordinates;
     
+    // Selected Taglets
+    @Option(name="-t", handler=StringArrayOptionHandler.class, metaVar="\"ovrm ovrp ...\"", usage="Choose Recommenders Taglets (Default: Use all registered Taglets): \n ovrm: Method Overrides \n ovrp: Method Override Patterns")
+    private String[] taglets;
+    
     public CLIOptions() {
         try {
-            //mvn central as default URL
-            this.sourceRepo = new URL("http://repo1.maven.org/maven2/");
+            // mvn central as default URL for sources
+            this.setSourceRepo(new URL("http://repo1.maven.org/maven2/"));
+            
+            // eclipse kepler as default URL for models
+            this.setModelsRepo(new URL("http://download.eclipse.org/recommenders/models/kepler/"));
+            
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -81,7 +93,7 @@ public class CLIOptions {
     }
 
     public URL getSourceRepo() {
-        return sourceRepo;
+        return this.sourceRepo;
     }
 
     public void setSourceRepo(URL sourceRepo) {
@@ -94,6 +106,22 @@ public class CLIOptions {
 
     public void setUploadRepo(URL uploadRepo) {
         this.uploadRepo = uploadRepo;
+    }
+
+    public URL getModelsRepo() {
+        return modelsRepo;
+    }
+
+    public void setModelsRepo(URL modelsRepo) {
+        this.modelsRepo = modelsRepo;
+    }
+
+    public String[] getTaglets() {
+        return taglets;
+    }
+
+    public void setTaglets(String[] taglets) {
+        this.taglets = taglets;
     }
 
 }

@@ -8,7 +8,9 @@
 
    <launcherArgs>
       <programArgs>-consoleLog
-org.sonatype.aether:aether-util:1.13.1
+org.apache.lucene:org.apache.lucene.core:3.5.0
+-sr C:\Users\PaddyG\Code\m2_eclipse-modeling-kepler_source 
+-mr C:\Users\PaddyG\Code\m2_eclipse-modeling-kepler_models\models 
 -d C:\Users\PaddyG\Code\LiveDocOutput</programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>

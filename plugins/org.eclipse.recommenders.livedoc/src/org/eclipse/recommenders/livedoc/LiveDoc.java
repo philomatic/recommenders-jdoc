@@ -1,12 +1,14 @@
 package org.eclipse.recommenders.livedoc;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.recommenders.livedoc.javadoc.RecommendersDoclet;
+
 import com.google.common.collect.Lists;
-import com.sun.tools.doclets.Taglet;
 
 /**
  * @recommenders.test
@@ -18,8 +20,12 @@ public class LiveDoc implements ILiveDoc {
     private boolean verbose;
     private File sourceDir;
     private File outputDir;
-    private List<Taglet> taglets;
     private List<String> subpackages;
+    private String groupId;
+    private String artifactId;
+    private String artifactVersion;
+    private URL modelsRepo;
+    private String[] selectedTaglets;
     
     public LiveDoc(boolean verbose, File sourceFiles, File outputDir, List<String> subpackages) {
         super();
@@ -34,6 +40,24 @@ public class LiveDoc implements ILiveDoc {
      * 
      */
     public boolean generate() {
+        
+        // set system properties for groupId, artifactId, artifactVersion
+        
+        if (System.getProperty("recommenders.livedoc.groupId") == null) {
+            System.setProperty("recommenders.livedoc.groupId", groupId);
+        }
+        if (System.getProperty("recommenders.livedoc.artifactId") == null) {
+            System.setProperty("recommenders.livedoc.artifactId", artifactId);
+        }
+        if (System.getProperty("recommenders.livedoc.artifactVersion") == null) {
+            System.setProperty("recommenders.livedoc.artifactVersion", artifactVersion);
+        }
+        
+        if (System.getProperty("recommenders.livedoc.modelsRepo") == null) {
+            System.setProperty("recommenders.livedoc.modelsRepo", modelsRepo.toExternalForm());
+        }
+        
+        RecommendersDoclet.instance().getTagletManager().setSelectedTaglets(selectedTaglets);
         
         @SuppressWarnings("unused")
         int returnCode = com.sun.tools.javadoc.Main.execute(this.getClass().getClassLoader(), buildArgs());
@@ -56,7 +80,7 @@ public class LiveDoc implements ILiveDoc {
         
         
         javadocArgs.add("-doclet");
-        javadocArgs.add("org.eclipse.recommenders.livedoc.extdoc.RecommendersDoclet");
+        javadocArgs.add("org.eclipse.recommenders.livedoc.javadoc.RecommendersDoclet");
         
         
         javadocArgs.add("-subpackages");
@@ -90,16 +114,6 @@ public class LiveDoc implements ILiveDoc {
     }
 
     @Override
-    public void setTaglets(List<Taglet> taglets) {
-        this.taglets = taglets;
-    }
-
-    @Override
-    public List<Taglet> getTaglets() {
-        return taglets;
-    }
-
-    @Override
     public void setOutputDir(File outputDir) {
         this.outputDir = outputDir;
     }
@@ -125,5 +139,35 @@ public class LiveDoc implements ILiveDoc {
 
     public void setSubpackages(List<String> subpackages) {
         this.subpackages = subpackages;
+    }
+
+    @Override
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+        
+    }
+
+    @Override
+    public void setArtifactId(String artifactId) {
+        this.artifactId = artifactId;
+        
+    }
+
+    @Override
+    public void setArtifactVersion(String version) {
+        this.artifactVersion = version;
+        
+    }
+
+    @Override
+    public void setModelsRepo(URL modelsRepo) {
+        this.modelsRepo = modelsRepo;
+        
+        
+    }
+
+    @Override
+    public void setSelectedTaglets(String[] taglets) {
+        this.selectedTaglets = taglets;
     }
 }

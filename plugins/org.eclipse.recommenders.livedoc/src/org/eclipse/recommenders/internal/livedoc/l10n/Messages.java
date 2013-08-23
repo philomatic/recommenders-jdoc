@@ -4,7 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 
-    private static final String BUNDLE_NAME = "com.codetrails.internal.repo.l10n.messages";
+    private static final String BUNDLE_NAME = "org.eclipse.recommenders.internal.livedoc.l10n.messages";
 
     public static String INDEX_FOUND;
     public static String INDEX_NOT_FOUND;
