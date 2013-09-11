@@ -66,5 +66,10 @@ public class LiveDocUtils {
             return Names.src2vmType(holder.toString());
         }
     }
+    
+    public static void highlight(StringBuilder sb) {
+        sb.insert(0, "<div style=\"background-color:#FFFFD5;\">");
+        sb.append("</div>");
+    }
 
 }

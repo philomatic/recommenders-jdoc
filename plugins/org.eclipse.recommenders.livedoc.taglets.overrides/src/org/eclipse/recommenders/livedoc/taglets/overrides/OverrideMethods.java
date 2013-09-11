@@ -34,8 +34,11 @@ import com.sun.tools.doclets.internal.toolkit.taglets.TagletWriter;
 public class OverrideMethods extends RecommendersAetherTaglet {
     
     private SingleZipOverrideModelProvider modelProvider;
-    private final int ranking = 10;    
+    private final int ranking = 10;
+    private boolean highlight;    
     public void initialize() {
+        
+        highlight = Boolean.parseBoolean(System.getProperty("recommenders.livedoc.highlight"));
 
         Artifact artifact = downloadModelsArtifact("ovrm");
 
@@ -115,6 +118,10 @@ public class OverrideMethods extends RecommendersAetherTaglet {
             }
         }
         sb.append("</ul>");
+        
+        if (highlight){
+            LiveDocUtils.highlight(sb);
+        }
 
         TagletOutput output = writer.getOutputInstance();
         if (print) {
@@ -122,6 +129,7 @@ public class OverrideMethods extends RecommendersAetherTaglet {
         }
         return output;
     }
+
 
     private TagletOutput generateClassDoc(ClassDoc holder, TagletWriter writer) {
 
@@ -175,6 +183,10 @@ public class OverrideMethods extends RecommendersAetherTaglet {
             sb.append("</ul>");
         }
 
+        if (highlight){
+            LiveDocUtils.highlight(sb);
+        }
+        
         TagletOutput output = writer.getOutputInstance();
         output.setOutput(sb.toString());
         return output;
@@ -227,6 +239,10 @@ public class OverrideMethods extends RecommendersAetherTaglet {
             }
         }
 
+        if (highlight){
+            LiveDocUtils.highlight(sb);
+        }
+        
         TagletOutput output = writer.getOutputInstance();
         output.setOutput(sb.toString());
         return output;

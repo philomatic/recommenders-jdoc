@@ -121,7 +121,7 @@ public class Application implements IApplication {
         File sourceFiles = extractSourceFiles(sourceArtifact);
         List<String> subpackages = filterSourceFiles(sourceFiles);
         
-        ILiveDoc livedoc = new LiveDoc(settings.isVerbose(), sourceFiles, output, subpackages);
+        ILiveDoc livedoc = new LiveDoc(settings.isVerbose(), sourceFiles, output, subpackages, settings.isHighlight());
         livedoc.setGroupId(sourceArtifact.getGroupId());
         livedoc.setArtifactId(sourceArtifact.getArtifactId());
         livedoc.setArtifactVersion(sourceArtifact.getVersion());

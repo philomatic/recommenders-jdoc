@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 public class LiveDoc implements ILiveDoc {
     
     private boolean verbose;
+    private boolean highlight;
     private File sourceDir;
     private File outputDir;
     private List<String> subpackages;
@@ -27,12 +28,13 @@ public class LiveDoc implements ILiveDoc {
     private URL modelsRepo;
     private String[] selectedTaglets;
     
-    public LiveDoc(boolean verbose, File sourceFiles, File outputDir, List<String> subpackages) {
+    public LiveDoc(boolean verbose, File sourceFiles, File outputDir, List<String> subpackages, boolean highlight) {
         super();
         this.verbose = verbose;
         this.sourceDir = sourceFiles;
         this.outputDir = outputDir;
         this.subpackages = subpackages;
+        this.highlight = highlight;
     }
 
     /**
@@ -41,7 +43,7 @@ public class LiveDoc implements ILiveDoc {
      */
     public boolean generate() {
         
-        // set system properties for groupId, artifactId, artifactVersion
+        // set system properties for groupId, artifactId, artifactVersion, highlight
         
         if (System.getProperty("recommenders.livedoc.groupId") == null) {
             System.setProperty("recommenders.livedoc.groupId", groupId);
@@ -55,6 +57,14 @@ public class LiveDoc implements ILiveDoc {
         
         if (System.getProperty("recommenders.livedoc.modelsRepo") == null) {
             System.setProperty("recommenders.livedoc.modelsRepo", modelsRepo.toExternalForm());
+        }
+        
+        if (System.getProperty("recommenders.livedoc.modelsRepo") == null) {
+            System.setProperty("recommenders.livedoc.modelsRepo", modelsRepo.toExternalForm());
+        }
+        
+        if (System.getProperty("recommenders.livedoc.highlight") == null){
+            System.setProperty("recommenders.livedoc.highlight", Boolean.toString(highlight));
         }
         
         RecommendersDoclet.instance().getTagletManager().setSelectedTaglets(selectedTaglets);
@@ -169,5 +179,13 @@ public class LiveDoc implements ILiveDoc {
     @Override
     public void setSelectedTaglets(String[] taglets) {
         this.selectedTaglets = taglets;
+    }
+
+    public boolean isHighlighting() {
+        return highlight;
+    }
+
+    public void setHighlighting(boolean highlighting) {
+        this.highlight = highlighting;
     }
 }

@@ -31,6 +31,9 @@ public class CLIOptions {
     @Option(name="-u", handler=ExtURLOptionHandler.class, usage="...uploads the updated javadocs to the repository....")
     private URL uploadRepo;
     
+    @Option(name="-highlight", usage="Should Livedoc highlight its output with a yellow background?")
+    private boolean highlight;
+    
     // MavenCoordinates
     @Argument(index=0, metaVar="[MavenCoordinate]", required=true, usage="<GroupId>:<ArtifactId>:<Version>")
     private String mavenCoordinates;
@@ -122,6 +125,14 @@ public class CLIOptions {
 
     public void setTaglets(String[] taglets) {
         this.taglets = taglets;
+    }
+
+    public boolean isHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(boolean highlighting) {
+        this.highlight = highlighting;
     }
 
 }

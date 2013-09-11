@@ -40,8 +40,11 @@ public class OverridePatterns extends RecommendersAetherTaglet {
     
     private ZipFile modelsZip;
     private final int ranking = 20;
+    private boolean highlight;
 
     public void initialize() {
+        
+        highlight = Boolean.parseBoolean(System.getProperty("recommenders.livedoc.highlight"));
         
         Artifact artifact = downloadModelsArtifact("ovrp");
         try {
@@ -139,7 +142,9 @@ public class OverridePatterns extends RecommendersAetherTaglet {
             sb.append("</ul>");
         }
         
-        
+        if (highlight){
+            LiveDocUtils.highlight(sb);
+        }
         
         TagletOutput output = writer.getOutputInstance();
         output.setOutput(sb.toString());
