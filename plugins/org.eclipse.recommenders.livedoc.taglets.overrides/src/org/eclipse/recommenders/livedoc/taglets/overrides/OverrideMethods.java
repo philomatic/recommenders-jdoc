@@ -145,7 +145,12 @@ public class OverrideMethods extends RecommendersAetherTaglet {
 
                 @Override
                 public int compare(Recommendation<IMethodName> o1, Recommendation<IMethodName> o2) {
-                    return (Recommendations.asPercentage(o2) - Recommendations.asPercentage(o1));
+
+                    if (Recommendations.asPercentage(o2) == Recommendations.asPercentage(o1)){
+                        return o1.getProposal().getName().compareTo(o2.getProposal().getName());
+                    }else{
+                        return (Recommendations.asPercentage(o2) - Recommendations.asPercentage(o1));
+                    }
                 }
             });
 
