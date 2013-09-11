@@ -6,8 +6,8 @@ import java.net.URL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.recommenders.livedoc.aether.IRepositoryBroker;
-import org.eclipse.recommenders.livedoc.aether.RepoBrokerProvider;
+import org.eclipse.recommenders.livedoc.aether.IRepositoryClient;
+import org.eclipse.recommenders.livedoc.aether.RepoDealerProvider;
 import org.eclipse.recommenders.livedoc.aether.RepositoryDescriptor;
 import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.artifact.Artifact;
@@ -31,20 +31,14 @@ public abstract class RecommendersAetherTaglet extends RecommendersTaglet {
         MODELSREPO_CACHE_DIR.mkdirs();
         MODELSREPO_INDEX_DIR.mkdirs();
 
-        IRepositoryBroker repoBroker = null;
+        IRepositoryClient repoBroker = null;
         try {
-            repoBroker = RepoBrokerProvider.create(MODELSREPO_CACHE_DIR, MODELSREPO_INDEX_DIR);
+            repoBroker = RepoDealerProvider.create(MODELSREPO_CACHE_DIR);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         RepositoryDescriptor modelsRepoDescriptor = new RepositoryDescriptor("modelsRepo", getModelsRepo());
-
-        try {
-            repoBroker.ensureIndexUpToDate(modelsRepoDescriptor, new NullProgressMonitor());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         StringBuffer sb = new StringBuffer();
 

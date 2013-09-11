@@ -16,8 +16,8 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.recommenders.livedoc.ILiveDoc;
 import org.eclipse.recommenders.livedoc.LiveDoc;
-import org.eclipse.recommenders.livedoc.aether.IRepositoryBroker;
-import org.eclipse.recommenders.livedoc.aether.RepoBrokerProvider;
+import org.eclipse.recommenders.livedoc.aether.IRepositoryClient;
+import org.eclipse.recommenders.livedoc.aether.RepoDealerProvider;
 import org.eclipse.recommenders.livedoc.aether.RepositoryDescriptor;
 import org.eclipse.recommenders.livedoc.args4j.CLIOptions;
 import org.eclipse.recommenders.livedoc.args4j.ExtURLOptionHandler;
@@ -39,7 +39,7 @@ public class Application implements IApplication {
     private static final File SOURCEREPO_INDEX_DIR = new File(TEMP_DIR, "sourceRepo/indexes");
 //    private Logger log = LoggerFactory.getLogger(getClass());
     private CLIOptions settings;
-    private IRepositoryBroker repoBroker;
+    private IRepositoryClient repoBroker;
     private RepositoryDescriptor sourceRepositoryDescriptor;
 
     /*
@@ -187,13 +187,10 @@ public class Application implements IApplication {
     }
 
     private void initializeRepository() throws IOException, Exception {
-        repoBroker = RepoBrokerProvider.create(SOURCEREPO_CACHE_DIR, SOURCEREPO_INDEX_DIR);
+        repoBroker = RepoDealerProvider.create(SOURCEREPO_CACHE_DIR);
         
         sourceRepositoryDescriptor = new RepositoryDescriptor("sourceRepo",
                 settings.getSourceRepo());
-
-
-        repoBroker.ensureIndexUpToDate(sourceRepositoryDescriptor, new NullProgressMonitor());
     }
 
     private void prepareTempDirectory() {
