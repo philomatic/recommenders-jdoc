@@ -1,9 +1,10 @@
 package org.eclipse.recommenders.livedoc.cli;
 
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +22,6 @@ import org.eclipse.recommenders.livedoc.aether.RepositoryDescriptor;
 import org.eclipse.recommenders.livedoc.args4j.CLIOptions;
 import org.eclipse.recommenders.livedoc.args4j.ExtURLOptionHandler;
 import org.eclipse.recommenders.utils.Zips;
-
 import org.kohsuke.args4j.CmdLineParser;
 import org.sonatype.aether.RepositoryException;
 import org.sonatype.aether.artifact.Artifact;
@@ -140,17 +140,23 @@ public class Application implements IApplication {
     }
 
     private List<String> filterSourceFiles(File sourceFiles) {
-        List<String> subpackages = Arrays.asList(sourceFiles.list(new FilenameFilter() {
+        List<File> subpackages = Arrays.asList(sourceFiles.listFiles(new FileFilter() {
 
-            @Override
-            public boolean accept(File dir, String name) {
-                return !(name.equals("META-INF") 
-                        || name.equals("about.html")
-                        || name.equals("plugin.properties")
-                        || name.equals("about_files"));
+            public boolean accept(File file) {
+
+                //TODO: Performance tweak: don't use FileUtils.listFiles
+                return (!(file.getName().equals("META-INF")) 
+                        && (file.isDirectory())
+                        && (!FileUtils.listFiles(file, new String[]{"java"} , true).isEmpty()));
             }
         }));
-        return subpackages;
+
+        List<String> result = new ArrayList<String>(subpackages.size());
+
+        for (File file : subpackages) {
+            result.add(file.getName());
+        }
+        return result;
     }
 
     private File extractSourceFiles(Artifact artifact) throws IOException {
