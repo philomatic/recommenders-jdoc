@@ -62,10 +62,9 @@ public class LiveDocUtils {
             String typeName = StringUtils.substringBefore(holder.toString(), "(");
             typeName = StringUtils.substringBeforeLast(typeName, ".");
             return Names.src2vmType(typeName);
-        } else if (holder.isOrdinaryClass()) {
+        } else {
             return Names.src2vmType(holder.toString());
         }
-        return null;
     }
 
 }

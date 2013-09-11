@@ -2,6 +2,7 @@ package org.eclipse.recommenders.livedoc.taglets.overrides;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -9,8 +10,8 @@ import java.util.List;
 
 import org.eclipse.recommenders.livedoc.javadoc.RecommendersAetherTaglet;
 import org.eclipse.recommenders.livedoc.utils.LiveDocUtils;
-import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.models.ProjectCoordinate;
+import org.eclipse.recommenders.models.UniqueTypeName;
 import org.eclipse.recommenders.overrides.IOverrideModel;
 import org.eclipse.recommenders.overrides.SingleZipOverrideModelProvider;
 import org.eclipse.recommenders.utils.Recommendation;
@@ -96,22 +97,29 @@ public class OverrideMethods extends RecommendersAetherTaglet {
         .append("</h2>")
         .append("For the following types exists overrides statistics from Code Recommenders:")
         .append("<ul>");
+        
+        boolean print = false;
 
-        for (ClassDoc classDoc : packageDoc.allClasses()) {
+        ClassDoc[] classDocs = packageDoc.allClasses();
+        Arrays.sort(classDocs);
+        for (ClassDoc classDoc : classDocs) {
+            
             ITypeName typeName = VmTypeName.get(LiveDocUtils.extractTypeName(classDoc));
             Optional<IOverrideModel> model = ovrmModel(typeName);
 
             if (model.isPresent()){
+                print = true;
                 sb.append("<li>")
-                    .append(model.get().getType().getClassName())
-                    .append("</li>");
+                .append(model.get().getType().getClassName())
+                .append("</li>");
             }
         }
-
         sb.append("</ul>");
 
         TagletOutput output = writer.getOutputInstance();
-        output.setOutput(sb.toString());
+        if (print) {
+            output.setOutput(sb.toString());
+        }
         return output;
     }
 
