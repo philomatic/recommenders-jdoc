@@ -1,6 +1,7 @@
 package org.eclipse.recommenders.livedoc;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -68,10 +69,14 @@ public class LiveDoc implements ILiveDoc {
         }
         
         RecommendersDoclet.instance().getTagletManager().setSelectedTaglets(selectedTaglets);
-        
+
+        PrintWriter sysOut = new PrintWriter(System.out);
+        PrintWriter sysErr = new PrintWriter(System.err);
+
         @SuppressWarnings("unused")
-        int returnCode = com.sun.tools.javadoc.Main.execute(this.getClass().getClassLoader(), buildArgs());
-        // returnCode handling
+        int returnCode = com.sun.tools.javadoc.Main.execute("LiveDoc", sysErr, sysOut, sysOut, "org.eclipse.recommenders.livedoc.javadoc.RecommendersDoclet", this.getClass().getClassLoader(), buildArgs());
+
+        //TODO: returnCode handling
         return true;
     }
 
