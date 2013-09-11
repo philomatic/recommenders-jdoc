@@ -203,13 +203,27 @@ public class OverrideMethods extends RecommendersAetherTaglet {
                     }
                 }
                 sb.append("<dl>")
-                    .append("<dt>Subclass overrides probability:</dt>")
+                    .append("<dt>Method override recommendation:</dt>")
                     .append("<dd>")
-                    .append("<font color=\"#0000FF\">")
-                    .append(relevance + "%")
-                    .append("</font>")
-                    .append("</dd>")
-                    .append("</dl>");
+                    .append("Subclasses of ")
+                    .append(methodDeclaringType.getClassName());
+                
+                if (isBetween(relevance, 0, 50)){
+                    sb.append(" may ");
+                }else if (isBetween(relevance, 51, 99)){
+                    sb.append(" should ");
+                }else {
+                    sb.append(" must ");
+                }
+                
+                sb.append("override this method ")
+                .append("(")
+                .append("<font color=\"#0000FF\">")
+                .append(relevance + "%")
+                .append("</font>")
+                .append(")")
+                .append("</dd>")
+                .append("</dl>");
             }
         }
 
@@ -218,6 +232,10 @@ public class OverrideMethods extends RecommendersAetherTaglet {
         return output;
     }
     
+    private boolean isBetween(int x, int low, int high) {
+        return low <= x && x <= high;
+    }
+
     private Optional<IOverrideModel> ovrmModel(ITypeName typeName) {
         ProjectCoordinate coordinate = new ProjectCoordinate(groupId, artifactId, artifactVersion);
 
